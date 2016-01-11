@@ -10,7 +10,7 @@ The following dependancies are required for this script to run. Given the enviro
 - Requests v2.9.1 - http://docs.python-requests.org/en/latest/
 - Requests-ntlm - https://github.com/requests/requests-ntlm
 
-## Example ##
+## Example Raw Python ##
 
 ```Python
 
@@ -40,4 +40,44 @@ status_url = "https://" + session_parameters.web_adaptor + "/" + session_paramet
 response = session.handle.post(status_url, data=data)
 
 print response.text
+```
+
+## Example ArcGIS Desktop Python Script ##
+
+This script can be configured in an ArcToolBox with two parameters. The first defines the map service name and can be a data type of "MapServer" the second is the password which should be a 'String Hidden'
+
+```Python
+
+import ArcGISWebSession
+import getpass
+import arcpy
+
+full_service_name = arcpy.GetParameterAsText(0)
+
+service_name_segments = full_service_name.split('\\')
+service_name = service_name_segments[len(service_name_segments) - 1]
+arcpy.AddMessage(service_name)
+
+session_parameters = ArcGISWebSession.SessionParameters
+session_parameters.domain = "FakeDomain"
+session_parameters.username = getpass.getuser()
+session_parameters.password = arcpy.GetParameterAsText(1)
+session_parameters.web_adaptor = "maps.FakePortalURL.com"
+session_parameters.arcgis_path = "arcgis" #optional
+session_parameters.portal_path = "portal" #optional
+
+session = ArcGISWebSession.Session(session_parameters);
+token = ArcGISWebSession.Token(session)
+
+data = {
+    "f":"json",
+    "token":token.aquire()
+}
+
+status_url = "https://" + session_parameters.web_adaptor + "/" + \
+             session_parameters.arcgis_path + "/admin/services/" + \
+             service_name + "/status"
+
+response = session.handle.post(status_url, data=data)
+arcpy.AddMessage(response.text)
 ```
