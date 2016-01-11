@@ -1,5 +1,8 @@
-# ArcGISServerGenerateToken #
-Generate a token for an ArcGIS Server federated with Portal for ArcGIS using NTLM Security.
+# ArcGISWebSessionWrapper #
+A collection of python classes used to create a 'requests' session for managing request to an on-premise ArcGIS Server
+federated with Portal for ArcGIS using NTLM security (active directory).
+
+The session class is used in conjunction with the token class to create a single web session that takes care of authentication and token management.
 
 ## Dependancies ##
 The following dependancies are required for this script to run. Given the environment that this script is working is within a secured NTLM environment, I have created a [gist](https://gist.github.com/SamDrummond/c796710fd812e9a25505) which provides instructions on how to install pip and pip packages.
@@ -31,8 +34,8 @@ data = {
     "token":token.aquire()
 }
 
-status_url = "https://" + session_parameters.web_adaptor + "/" + session_parameters.arcgis_path + "/admin/services/" + \
-             service_name + ".MapServer/status"
+status_url = "https://" + session_parameters.web_adaptor + "/" + session_parameters.arcgis_path +
+             "/admin/services/" + service_name + ".MapServer/status"
 
 response = session.handle.post(status_url, data=data)
 
